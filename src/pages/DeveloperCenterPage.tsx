@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Badge, SectionCard } from '@/components/ui';
-import { Code2, FileCode, Database, Shield, CheckCircle, AlertCircle, GitBranch, Layers } from 'lucide-react';
+import { FileCode, Database, Shield, CircleCheck as CheckCircle } from 'lucide-react';
 
 interface ModuleInfo {
   name: string;
@@ -73,8 +73,7 @@ export default function DeveloperCenterPage() {
 
   const activeCount = MODULES.filter((m) => m.status === 'active').length;
   const reqActive = REQUIREMENTS.filter((r) => r.status === 'active').length;
-  const reqPartial = REQUIREMENTS.filter((r) => r.status === 'partial').length;
-  const reqPending = REQUIREMENTS.filter((r) => r.status === 'pending').length;
+
 
   return (
     <div className="space-y-6">

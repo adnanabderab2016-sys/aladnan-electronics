@@ -68,10 +68,7 @@ export function normalizeDigits(input: string): string {
 /** Parse a numeric string that may contain Arabic digits, thousand separators, decimal commas */
 export function parseAmount(input: string): number | null {
   if (!input || input.trim() === '') return null;
-  const normalized = normalizeDigits(input.trim())
-    .replace(/[,،]/g, (m, _offset, str) => {
-      return '';
-    });
+  const normalized = normalizeDigits(input.trim()).replace(/[,،]/g, '');
   const cleaned = normalized.replace(/[^\d.-]/g, '');
   const n = parseFloat(cleaned);
   return isNaN(n) ? null : n;

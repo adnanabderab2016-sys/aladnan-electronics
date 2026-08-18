@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
 import { EmptyState, LoadingState, Badge } from '@/components/ui';
 import { formatDateTime } from '@/lib/utils';
-import { Bell, Check, Trash2, Loader2 } from 'lucide-react';
+import { Bell, Check, Trash2 } from 'lucide-react';
 import type { Notification } from '@/types';
 
 const TYPE_LABELS: Record<string, string> = {

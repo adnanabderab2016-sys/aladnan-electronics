@@ -4,37 +4,7 @@ import { useTheme } from '@/context/ThemeContext';
 import { useRouter, type RouteName } from '@/context/RouterContext';
 import { useOnlineStatus } from '@/hooks/useOnlineStatus';
 import { cn } from '@/lib/utils';
-import {
-  Cpu,
-  LayoutDashboard,
-  Package,
-  Warehouse,
-  Tag,
-  ShoppingCart,
-  Users,
-  Truck,
-  ClipboardList,
-  ShieldCheck,
-  Wrench,
-  RotateCcw,
-  Upload,
-  BarChart3,
-  Settings,
-  Menu,
-  X,
-  Moon,
-  Sun,
-  LogOut,
-  Bell,
-  Smartphone,
-  FileText,
-  Radio,
-  Activity,
-  Code2,
-  Search,
-  WifiOff,
-  CheckCircle2,
-} from 'lucide-react';
+import { Cpu, LayoutDashboard, Package, Warehouse, Tag, ShoppingCart, Users, Truck, ClipboardList, ShieldCheck, Wrench, RotateCcw, Upload, ChartBar as BarChart3, Settings, Menu, X, Moon, Sun, LogOut, Bell, Smartphone, FileText, Radio, Activity, Code as Code2, Search, WifiOff, CircleCheck as CheckCircle2 } from 'lucide-react';
 
 interface NavItem {
   route: RouteName;

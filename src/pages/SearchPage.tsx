@@ -42,12 +42,12 @@ export default function SearchPage() {
 
     const r: SearchResult[] = [];
     (prods.data ?? []).forEach((p: { id: string; name: string; sku: string }) => r.push({ type: 'منتج', id: p.id, label: p.name, sublabel: p.sku, route: 'products', icon: Package }));
-    (orders.data ?? []).forEach((o: { id: string; order_number: string; customers: { name: string } | null }) => r.push({ type: 'طلب', id: o.id, label: o.order_number, sublabel: o.customers?.name ?? '', route: 'orders', icon: ShoppingCart }));
+    (orders.data ?? []).forEach((o: { id: string; order_number: string; customers: { name: string }[] | null }) => r.push({ type: 'طلب', id: o.id, label: o.order_number, sublabel: o.customers?.[0]?.name ?? '', route: 'orders', icon: ShoppingCart }));
     (custs.data ?? []).forEach((c: { id: string; name: string; code: string }) => r.push({ type: 'عميل', id: c.id, label: c.name, sublabel: c.code, route: 'customers', icon: Users }));
     (sups.data ?? []).forEach((s: { id: string; name: string; code: string }) => r.push({ type: 'مورد', id: s.id, label: s.name, sublabel: s.code, route: 'suppliers', icon: Truck }));
-    (serials.data ?? []).forEach((s: { id: string; serial_number: string; imei_1: string | null; products: { name: string } | null }) => r.push({ type: 'جهاز', id: s.id, label: s.serial_number, sublabel: s.products?.name ?? s.imei_1 ?? '', route: 'serials', icon: Smartphone }));
-    (invs.data ?? []).forEach((i: { id: string; invoice_number: string; customers: { name: string } | null }) => r.push({ type: 'فاتورة', id: i.id, label: i.invoice_number, sublabel: i.customers?.name ?? '', route: 'invoices', icon: FileText }));
-    (repairs.data ?? []).forEach((t: { id: string; ticket_number: string; customers: { name: string } | null }) => r.push({ type: 'إصلاح', id: t.id, label: t.ticket_number, sublabel: t.customers?.name ?? '', route: 'repairs', icon: Wrench }));
+    (serials.data ?? []).forEach((s: { id: string; serial_number: string; imei_1: string | null; products: { name: string }[] | null }) => r.push({ type: 'جهاز', id: s.id, label: s.serial_number, sublabel: s.products?.[0]?.name ?? s.imei_1 ?? '', route: 'serials', icon: Smartphone }));
+    (invs.data ?? []).forEach((i: { id: string; invoice_number: string; customers: { name: string }[] | null }) => r.push({ type: 'فاتورة', id: i.id, label: i.invoice_number, sublabel: i.customers?.[0]?.name ?? '', route: 'invoices', icon: FileText }));
+    (repairs.data ?? []).forEach((t: { id: string; ticket_number: string; customers: { name: string }[] | null }) => r.push({ type: 'إصلاح', id: t.id, label: t.ticket_number, sublabel: t.customers?.[0]?.name ?? '', route: 'repairs', icon: Wrench }));
 
     setResults(r);
     setLoading(false);

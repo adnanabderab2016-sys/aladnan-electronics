@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
 import { EmptyState, LoadingState, Badge } from '@/components/ui';
 import { formatCurrency, formatDateTime } from '@/lib/utils';
-import { FileText, Search, ArrowLeft, Loader2, Check } from 'lucide-react';
+import { FileText, Search, ArrowLeft, Loader as Loader2, Check } from 'lucide-react';
 import { useRouter } from '@/context/RouterContext';
 
 interface InvoiceRow {
@@ -112,10 +112,10 @@ function InvoiceDetail({ invoiceId, onBack, onChanged }: { invoiceId: string; on
   const [verifying, setVerifying] = useState<string | null>(null);
 
   const load = useCallback(async () => {
-    const [invRes, payRes, itemsRes] = await Promise.all([
-      supabase.from('invoices').select('*, customers(name, code), orders(order_number)').eq('id', invoiceId).maybeSingle(),
+    const invRes = await supabase.from('invoices').select('*, customers(name, code), orders(order_number)').eq('id', invoiceId).maybeSingle();
+    const [payRes, itemsRes] = await Promise.all([
       supabase.from('payments').select('*').eq('invoice_id', invoiceId).order('created_at', { ascending: false }),
-      supabase.from('order_items').select('*, products(name, sku)').eq('order_id', invoiceRes?.order_id ?? ''),
+      supabase.from('order_items').select('*, products(name, sku)').eq('order_id', invRes.data?.order_id ?? ''),
     ]);
     setInvoice(invRes.data as InvoiceRow);
     setPayments(payRes.data ?? []);

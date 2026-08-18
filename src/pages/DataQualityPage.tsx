@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
 import { SectionCard, LoadingState, Badge } from '@/components/ui';
 import { formatNumber } from '@/lib/utils';
-import { Activity, AlertTriangle, CheckCircle, XCircle } from 'lucide-react';
+import { Activity, TriangleAlert as AlertTriangle, CircleCheck as CheckCircle } from 'lucide-react';
 
 interface QualityReport {
   totalProducts: number;

@@ -17,7 +17,7 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: fileURLToPath(new URL('./index.html', import.meta.url)),
-        sw: fileURLToPath(new URL('./src/sw.ts', import.meta.url)),
+        sw: fileURLToPath(new URL('./sw.ts', import.meta.url)),
       },
       output: {
         entryFileNames: (chunkInfo) => {

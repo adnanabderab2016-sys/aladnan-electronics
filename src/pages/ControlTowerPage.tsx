@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
 import { SectionCard, LoadingState, Badge } from '@/components/ui';
 import { formatCurrency, formatNumber, formatDateTime } from '@/lib/utils';
-import { ShoppingCart, AlertTriangle, Wrench, RotateCcw, Upload, Clock, TrendingUp, Activity, Radio } from 'lucide-react';
+import { ShoppingCart, TriangleAlert as AlertTriangle, Wrench, RotateCcw, Upload, Clock, Radio } from 'lucide-react';
 
 interface TowerData {
   newOrders: number;
@@ -11,9 +11,9 @@ interface TowerData {
   activeRepairs: number;
   pendingRmas: number;
   failedImports: number;
-  recentOrders: { id: string; order_number: string; status: string; total: number; created_at: string; customers: { name: string } | null }[];
-  criticalStock: { id: string; product_id: string; on_hand: number; reserved: number; products: { name: string; sku: string } | null }[];
-  overdueRepairs: { id: string; ticket_number: string; status: string; sla_due_date: string | null; customers: { name: string } | null }[];
+  recentOrders: { id: string; order_number: string; status: string; total: number; created_at: string; customers: { name: string }[] | null }[];
+  criticalStock: { id: string; product_id: string; on_hand: number; reserved: number; products: { name: string; sku: string }[] | null }[];
+  overdueRepairs: { id: string; ticket_number: string; status: string; sla_due_date: string | null; customers: { name: string }[] | null }[];
 }
 
 export default function ControlTowerPage() {
@@ -79,7 +79,7 @@ export default function ControlTowerPage() {
           <div key={m.label} className="card p-5">
             <div className="flex items-center justify-between mb-3">
               <div className="w-10 h-10 rounded-xl bg-primary-50 dark:bg-primary-900/20 flex items-center justify-center text-primary-600 dark:text-primary-400">{m.icon}</div>
-              <Badge variant={m.variant}>{m.value > 0 ? 'يتطلب انتباه' : 'جيد'}</Badge>
+              <Badge variant={m.variant as 'warning' | 'error' | 'success' | 'info'}>{m.value > 0 ? 'يتطلب انتباه' : 'جيد'}</Badge>
             </div>
             <p className="text-muted text-sm">{m.label}</p>
             <p className="text-2xl font-bold text-app mt-1">{formatNumber(m.value)}</p>
@@ -93,7 +93,7 @@ export default function ControlTowerPage() {
            <div className="space-y-2">
              {data.recentOrders.map((o) => (
                <div key={o.id} className="flex items-center justify-between p-3 rounded-xl hover:bg-app transition-colors">
-                 <div><p className="font-medium text-app text-sm">{o.order_number}</p><p className="text-muted text-xs">{o.customers?.name ?? '—'} — {formatDateTime(o.created_at)}</p></div>
+                 <div><p className="font-medium text-app text-sm">{o.order_number}</p><p className="text-muted text-xs">{o.customers?.[0]?.name ?? '—'} — {formatDateTime(o.created_at)}</p></div>
                  <span className="text-sm font-semibold text-app">{formatCurrency(o.total)}</span>
                </div>
              ))}
@@ -105,7 +105,7 @@ export default function ControlTowerPage() {
            <div className="space-y-2">
              {data.criticalStock.map((s) => (
                <div key={s.id} className="flex items-center justify-between p-3 rounded-xl hover:bg-app transition-colors">
-                 <div><p className="font-medium text-app text-sm">{s.products?.name ?? '—'}</p><code className="text-xs text-muted">{s.products?.sku ?? ''}</code></div>
+                 <div><p className="font-medium text-app text-sm">{s.products?.[0]?.name ?? '—'}</p><code className="text-xs text-muted">{s.products?.[0]?.sku ?? ''}</code></div>
                  <div className="text-right"><p className="text-sm font-semibold text-error-600">{s.on_hand} متبقي</p><p className="text-xs text-muted">{s.reserved} محجوز</p></div>
                </div>
              ))}
@@ -117,7 +117,7 @@ export default function ControlTowerPage() {
            <div className="space-y-2">
              {data.overdueRepairs.map((r) => (
                <div key={r.id} className="flex items-center justify-between p-3 rounded-xl hover:bg-app transition-colors">
-                 <div><p className="font-medium text-app text-sm">{r.ticket_number}</p><p className="text-muted text-xs">{r.customers?.name ?? '—'}</p></div>
+                 <div><p className="font-medium text-app text-sm">{r.ticket_number}</p><p className="text-muted text-xs">{r.customers?.[0]?.name ?? '—'}</p></div>
                  <div className="text-right">{r.sla_due_date && <p className="text-xs text-warning-600">SLA: {formatDateTime(r.sla_due_date)}</p>}<Badge variant="info">{r.status}</Badge></div>
                </div>
              ))}

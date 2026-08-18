@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback, useRef } from 'react';
 import { supabase } from '@/lib/supabase';
 import { EmptyState, LoadingState, Badge } from '@/components/ui';
 import { formatDateTime } from '@/lib/utils';
-import { Upload, FileSpreadsheet, Loader2, CheckCircle, AlertCircle, X } from 'lucide-react';
+import { Upload, FileSpreadsheet, Loader as Loader2, CircleAlert as AlertCircle, X } from 'lucide-react';
 import type { ImportJob } from '@/types';
 
 const PROFILES = [

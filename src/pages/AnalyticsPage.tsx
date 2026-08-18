@@ -1,8 +1,8 @@
 import { useEffect, useState, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
-import { StatCard, SectionCard, LoadingState, Badge } from '@/components/ui';
+import { StatCard, SectionCard, LoadingState } from '@/components/ui';
 import { formatCurrency, formatNumber } from '@/lib/utils';
-import { TrendingUp, Package, ShoppingCart, Users, AlertTriangle } from 'lucide-react';
+import { TrendingUp, Package, ShoppingCart, Users, TriangleAlert as AlertTriangle } from 'lucide-react';
 
 export default function AnalyticsPage() {
   const [loading, setLoading] = useState(true);
