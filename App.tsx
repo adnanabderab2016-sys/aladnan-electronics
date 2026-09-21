@@ -4,10 +4,11 @@ import { ThemeProvider } from '@/context/ThemeContext';
 import { RouterProvider, useRouter } from '@/context/RouterContext';
 import { StoreRouterProvider, useStoreRouter } from '@/context/StoreRouterContext';
 import { CartProvider } from '@/context/CartContext';
+import { isSupabaseConfigured } from '@/lib/supabase';
 import AppShell from '@/components/AppShell';
 import AuthPage from '@/pages/AuthPage';
 import StoreLayout from '@/components/store/StoreLayout';
-import { Loader as Loader2, Store, LayoutDashboard } from 'lucide-react';
+import { Loader as Loader2, Store, LayoutDashboard, AlertCircle } from 'lucide-react';
 
 const DashboardPage = lazy(() => import('@/pages/DashboardPage'));
 const ProductsPage = lazy(() => import('@/pages/ProductsPage'));
@@ -130,6 +131,20 @@ function AppContent() {
       }
     }
   }, [profile]);
+
+  if (!isSupabaseConfigured) {
+    return (
+      <div className="min-h-screen bg-app flex items-center justify-center p-4">
+        <div className="card max-w-md p-8 text-center">
+          <div className="w-16 h-16 rounded-2xl bg-warning-50 dark:bg-warning-900/20 flex items-center justify-center mx-auto mb-4">
+            <AlertCircle className="w-8 h-8 text-warning-600" />
+          </div>
+          <h1 className="text-xl font-bold text-app mb-2">إعداد قاعدة البيانات مطلوب</h1>
+          <p className="text-muted text-sm">يرجى التأكد من إعداد متغيرات البيئة لـ Supabase ليعمل التطبيق بشكل صحيح.</p>
+        </div>
+      </div>
+    );
+  }
 
   if (loading) {
     return (
