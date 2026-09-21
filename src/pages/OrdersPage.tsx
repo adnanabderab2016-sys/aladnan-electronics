@@ -13,6 +13,7 @@ import {
   Package,
   Truck,
   Clock,
+  RotateCcw,
 } from 'lucide-react';
 import { useRouter } from '@/context/RouterContext';
 import type { Order, OrderItem, Customer, Product } from '@/types';
@@ -385,6 +386,8 @@ function OrderDetail({ orderId, onBack, onChanged }: { orderId: string; onBack: 
   const [history, setHistory] = useState<{ id: string; from_status: string | null; to_status: string; actor: string | null; created_at: string }[]>([]);
   const [loading, setLoading] = useState(true);
   const [advancing, setAdvancing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [editQty, setEditQty] = useState<Record<string, number>>({});
 
   const load = useCallback(async () => {
     const [orderRes, itemsRes, histRes] = await Promise.all([
@@ -409,20 +412,44 @@ function OrderDetail({ orderId, onBack, onChanged }: { orderId: string; onBack: 
     const nextStatus = STATUS_FLOW[currentIdx + 1].key;
 
     setAdvancing(true);
-    const { error: err } = await supabase
-      .from('orders')
-      .update({ status: nextStatus })
-      .eq('id', orderId);
+    const { error: err } = await supabase.rpc('advance_order_status', {
+      p_order_id: orderId,
+      p_to_status: nextStatus,
+      p_reason: null,
+    });
 
-    if (!err) {
-      await supabase.from('order_status_history').insert({
-        order_id: orderId,
-        from_status: order.status,
-        to_status: nextStatus,
-        actor: 'user',
-      });
+    if (err) {
+      setError(err.message);
     }
+    setAdvancing(false);
+    load();
+    onChanged();
+  };
 
+  const adjustItemQty = async (itemId: string, newQty: number) => {
+    setAdvancing(true);
+    const { error: err } = await supabase.rpc('adjust_order_item_qty', {
+      p_item_id: itemId,
+      p_new_qty: newQty,
+    });
+    if (err) {
+      setError(err.message);
+    }
+    setAdvancing(false);
+    load();
+    onChanged();
+  };
+
+  const returnForEdit = async () => {
+    if (!order) return;
+    setAdvancing(true);
+    const { error: err } = await supabase.rpc('return_order_for_edit', {
+      p_order_id: orderId,
+      p_reason: 'مراجعة الكميات',
+    });
+    if (err) {
+      setError(err.message);
+    }
     setAdvancing(false);
     load();
     onChanged();
@@ -488,12 +515,20 @@ function OrderDetail({ orderId, onBack, onChanged }: { orderId: string; onBack: 
                 );
               })}
             </div>
-            {canAdvance && (
-              <button onClick={advanceStatus} disabled={advancing} className="btn-primary mt-3">
-                {advancing ? <Loader2 className="w-4 h-4 animate-spin" /> : <ArrowLeft className="w-4 h-4" />}
-                {nextStatus ? `تقديم إلى: ${nextStatus.label}` : 'تقديم الحالة'}
-              </button>
-            )}
+            <div className="flex flex-wrap gap-2 mt-3">
+              {canAdvance && (
+                <button onClick={advanceStatus} disabled={advancing} className="btn-primary">
+                  {advancing ? <Loader2 className="w-4 h-4 animate-spin" /> : <ArrowLeft className="w-4 h-4" />}
+                  {nextStatus ? `تقديم إلى: ${nextStatus.label}` : 'تقديم الحالة'}
+                </button>
+              )}
+              {order.status !== 'awaiting_modification' && order.status !== 'completed' && (
+                <button onClick={returnForEdit} disabled={advancing} className="btn-secondary">
+                  <RotateCcw className="w-4 h-4" />
+                  إرجاع للعميل للتعديل
+                </button>
+              )}
+            </div>
           </div>
         )}
       </div>
@@ -519,8 +554,27 @@ function OrderDetail({ orderId, onBack, onChanged }: { orderId: string; onBack: 
                   <td className="px-4 py-3">
                     <p className="font-medium text-app">{item.products?.name ?? '—'}</p>
                     <code className="text-xs text-muted">{item.products?.sku ?? ''}</code>
+                    {item.is_dirty && <span className="badge-warning text-[10px] py-0.5 px-1.5 mr-1">عدّلت</span>}
                   </td>
-                  <td className="px-4 py-3 text-app">{item.quantity}</td>
+                  <td className="px-4 py-3">
+                    <div className="flex items-center gap-2">
+                      <span className="text-app">{item.quantity}</span>
+                      <input
+                        type="number"
+                        min={1}
+                        value={editQty[item.id] ?? item.quantity}
+                        onChange={(e) => setEditQty((prev) => ({ ...prev, [item.id]: parseInt(e.target.value) || 1 }))}
+                        className="input w-16 text-sm py-1"
+                      />
+                      <button
+                        onClick={() => adjustItemQty(item.id, editQty[item.id] ?? item.quantity)}
+                        disabled={advancing}
+                        className="btn-secondary px-2 py-1 text-xs"
+                      >
+                        تعديل
+                      </button>
+                    </div>
+                  </td>
                   <td className="px-4 py-3 hidden sm:table-cell text-muted">{formatCurrency(item.unit_price)}</td>
                   <td className="px-4 py-3 font-semibold text-app">{formatCurrency(item.total_price)}</td>
                 </tr>
@@ -532,6 +586,10 @@ function OrderDetail({ orderId, onBack, onChanged }: { orderId: string; onBack: 
           </table>
         </div>
       </div>
+
+      {error && (
+        <div className="bg-error-50 dark:bg-error-900/20 text-error-700 dark:text-error-300 text-sm rounded-xl px-4 py-3">{error}</div>
+      )}
 
       {/* History */}
       {history.length > 0 && (
